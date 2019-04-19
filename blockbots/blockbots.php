@@ -44,7 +44,7 @@ function blockbots_check($a, $b)
 		'Yasni', 'netEstate NE Crawler', 'Exabot', 'Pixray-Seeker', 'Linguee', 'integromedb', 'SearchmetricsBot',
 		'BDCbot', 'GrapeshotCrawler', 'WeSEE:Search', 'TurnitinBot', 'admantx', 'BUbiNG', 'YisouSpider',
 		'facebookexternalhit', 'ldspider', 'Researchscan', 'CCBot', 'Qwantify/Bleriot', 'PaperLiBot', 'bingbot',
-		'AppEngine-Google', 'Datanyze'];
+		'AppEngine-Google', 'Datanyze', 'evc-batch', 'HTTP Banner Detection', 'DuckDuckGo'];
 // collection@infegy.com
 	foreach ($agents as $agent) {
 		if (stristr($_SERVER['HTTP_USER_AGENT'], $agent)) {
@@ -55,7 +55,8 @@ function blockbots_check($a, $b)
 
 	$agents = ['diaspora-connection-tester', 'DiasporaFederation', 'Friendica', '(compatible; zot)',
 		'Micro.blog', 'Mastodon', 'hackney', 'GangGo', 'python/federation', 'GNU social', 'winHttp',
-		'Mr.4x3 Powered', 'Test Certificate Info', 'WordPress.com'];
+		'Go-http-client', 'Mr.4x3 Powered', 'Test Certificate Info', 'WordPress.com', 'zgrab',
+		'curl/', 'StatusNet', 'OpenGraphReader/', 'Uptimebot/'];
 
 	foreach ($agents as $agent) {
 		if (stristr($_SERVER['HTTP_USER_AGENT'], $agent)) {
@@ -75,22 +76,28 @@ function blockbots_check($a, $b)
 
 function blockbots_remove_known_parts($agent)
 {
-	$patterns = ['Chrome/\d*\.\d*\.\d*\.\d*',
-		'Firefox/\d*\.\d*\.\d*\.\d*', 'Firefox/\d*\.\d*\.\d*', 'Firefox/\d*\.\d*',
-		'rv:\d*\.\d*\.\d*\.\d*', 'rv:\d*\.\d*\.\d*', 'rv:\d*\.\d*',
-		'AppleWebKit/\d*\.\d*\.\d*', 'AppleWebKit/\d*\.\d*',
-		'Safari/\d*\.\d*\.\d*', 'Safari/\d*\.\d*',
-		'Gecko/\d*\.\d*', 'Gecko/\d*',
-		'Chromium/\d*\.\d*\.\d*\.\d*', 'Trident/\d*\.\d*', 'Edge/\d*\.\d*',
-		'Opera/\d*\.\d*', 'Ceatles/\d*\.\d*',
-		'UCBrowser/\d*\.\d*\.\d*\.\d*', 'Navigator/\d*\.\d*\.\d*\.\d*', 'Mozilla/\d*\.\d*',
-		'Goanna/\d*\.\d*', 'PaleMoon/\d*\.\d*\.\d*',
-		'Windows NT \d*\.\d*',
-		'Intel Mac OS X \d*_\d*_\d*', 'Intel Mac OS X \d*\.\d*\.\d*', 'Intel Mac OS X \d*\.\d*',
-		'Android \d*\.\d*\.\d*', 'Android \d*\.\d*', 'Android \d*',
-		'Presto/\d*\.\d*\.\d*', 'MSIE \d*\.\d*', 'Version/\d*\.\d*\.\d*',
-		'Version/\d*\.\d*', '.NET CLR \d*\.\d*\.\d*', 'SLCC2', 'Media Center PC \d*\.\d*',
-		'Nexus \d*'
+	$patterns = [
+		'\(Linux; Android [\d\.]*; [^\)]*\)',
+		'\(Linux; U; Android [\d\.]*; [^\)]*\)',
+		'\(iPhone; CPU [^\)]* like Mac OS X\)',
+		'\(iPad; CPU [^\)]* like Mac OS X\)',
+		'\(X11; Linux [\d_a-z]*\)',
+		'\(X11; Linux [\d_a-z]*; rv:[\d\.a-z]*\)',
+		'\(X11; [a-z]*; Linux [\d_a-z]*; rv:[\d\.a-z]*\)',
+		'Chrome/[\d\.]*', 'Vivaldi/[\d\.]*',
+		'Firefox/[\d\.]*', 'rv:[\d\.a-z]*', 'AppleWebKit/[\d\.]*',
+		'Safari/[\d\.]*', 'Gecko/[\d\.]*', 'Quark/[\d\.]*',
+		'Chromium/[\d\.]*', 'Trident/[\d\.]*', 'Edge/[\d\.]*', 'Edg/[\d\.]*',
+		'Opera/[\d\.]*', 'Ceatles/[\d\.]*',
+		'UCBrowser/[\d\.]*', 'Navigator/[\d\.a-z]*', 'Mozilla/[\d\.]*',
+		'Goanna/[\d\.]*', 'PaleMoon/[\d\.]*',
+		'Windows NT [\d\.]*',
+		'Intel Mac OS X \d*_\d*_\d*', 'Intel Mac OS X [\d\.]*',
+		'Presto/[\d\.]*', 'MSIE [\d\.]*', 'Version/[\d\.]*',
+		'Version/[\d\.]*', '.NET CLR [\d\.]*', 'SLCC2', 'Media Center PC \d*\.\d*',
+		'Netscape/\d*\.\d*\.\d*', 'CrOS x86_64 [\d\.]*',
+		'Mobile/[\d\.a-z]*', 'Build/[\d\.a-z]*',
+		'FxiOS/[\d\.a-z]*', 'OPR/[\d\.]*', 'UBrowser/[\d\.]*'
 	];
 
 	do {
@@ -100,16 +107,15 @@ function blockbots_remove_known_parts($agent)
 		}
 	} while ($agent != $oldagent);
 
-	$search = ['KHTML', 'like Gecko', 'WOW64', 'Ubuntu', 'Linux', 'x86_64', 'X11', 'compatible',
-		'Macintosh', 'x64', 'Win64', 'Mobile', 'i686', 'en-US', 'zh-CN', 'CrOS', ' de ',
-		'F5121', 'Build/34.0.A.1.247', 'CLT-L04', ' fr ', ' U ', 'LG-K420', 'Build/KTU84P',
-		'like Mac OS X', '/15E148', 'SM-A320FL', 'a3pre', 'Google Favicon', 'Windows',
-		'iPhone', 'iPad', 'CPU', 'OS 12_2', 'FxiOS/16.0b14732', 'googleweblight',
-		'Build/JOP40D', ' en-us ', 'Nokia 2.1', 'Build/OPM1.171019.019', 'Build/R16NW',
-		' wv ', 'OPR/58.0.3135.127', 'PPC Mac OS X Mach-O', ' pre ', 'Navigator/9.0b3', '11647.104.0'];
+	$search = ['KHTML', 'like Gecko', 'WOW64', 'x86_64', 'X11', 'Linux', 'compatible',
+		'Macintosh', 'x64', 'Win64', 'Mobile', 'i686', 'en-US', 'zh-CN', ' de ',
+		' fr ', ' U ', 'Google Favicon', 'Windows',
+		'googleweblight',' en-us ',
+		'Win 9x 4.90', ' SG ', 'Intel Mac OS X x.y',
+		' wv ', 'PPC Mac OS X Mach-O', ' pre '];
 	do {
 		$oldtext = $agent;
-		$agent = ' ' . trim(str_replace($search, ' ', $agent), ' ();:.,') . ' ';
+		$agent = ' ' . trim(str_replace($search, ' ', $agent), ' ();:.,/') . ' ';
 	} while ($oldtext != $agent);
 
 	return trim($agent);
