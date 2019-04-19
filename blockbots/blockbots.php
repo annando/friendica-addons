@@ -46,7 +46,7 @@ function blockbots_check($a, $b)
 		'Yasni', 'netEstate NE Crawler', 'Exabot', 'Pixray-Seeker', 'Linguee', 'integromedb', 'SearchmetricsBot',
 		'BDCbot', 'GrapeshotCrawler', 'WeSEE:Search', 'TurnitinBot', 'admantx', 'BUbiNG', 'YisouSpider',
 		'facebookexternalhit', 'ldspider', 'Researchscan', 'CCBot', 'Qwantify/Bleriot', 'PaperLiBot', 'bingbot',
-		'AppEngine-Google', 'Datanyze', 'evc-batch', 'HTTP Banner Detection', 'DuckDuckGo'];
+		'AppEngine-Google', 'Datanyze', 'evc-batch', 'HTTP Banner Detection', 'DuckDuckGo', 'QwantBrowser'];
 
 	foreach ($agents as $agent) {
 		if (stristr($_SERVER['HTTP_USER_AGENT'], $agent)) {
@@ -88,20 +88,21 @@ function blockbots_check($a, $b)
 function blockbots_remove_known_parts($agent)
 {
 	// Search patterns of known agents
-	$patterns = ['\(Linux; Android [\d\.]*; [^\)]*\)', '\(Linux; U; Android [\d\.]*; [^\)]*\)',
-		'\(iPhone; CPU [^\)]* like Mac OS X\)', '\(iPad; CPU [^\)]* like Mac OS X\)',
-		'\(X11; Linux [\d_a-z]*\)', '\(X11; Linux [\d_a-z]*; rv:[\d\.a-z]*\)',
-		'\(X11; [a-z]*; Linux [\d_a-z]*; rv:[\d\.a-z]*\)',
-		'Chrome/[\d\.]*', 'Vivaldi/[\d\.]*', 'Firefox/[\d\.]*', 'rv:[\d\.a-z]*',
-		'AppleWebKit/[\d\.]*', 'Safari/[\d\.]*', 'Gecko/[\d\.]*', 'Quark/[\d\.]*',
-		'Chromium/[\d\.]*', 'Trident/[\d\.]*', 'Edge/[\d\.]*', 'Edg/[\d\.]*',
-		'Opera/[\d\.]*', 'Ceatles/[\d\.]*', 'UCBrowser/[\d\.]*', 'Navigator/[\d\.a-z]*',
-		'Mozilla/[\d\.]*', 'Goanna/[\d\.]*', 'PaleMoon/[\d\.]*', 'Windows NT [\d\.]*',
-		'Intel Mac OS X \d*_\d*_\d*', 'Intel Mac OS X [\d\.]*', 'Presto/[\d\.]*',
-		'MSIE [\d\.]*', 'Version/[\d\.]*', 'Version/[\d\.]*', '.NET CLR [\d\.]*',
+	$patterns = ['\(Linux; Android [\d\.].*; [^\)].*\)', '\(Linux; U; Android [\d\.].*; [^\)].*\)',
+		'\(iPhone; CPU [^\)].* like Mac OS X\)', '\(iPad; CPU [^\)].* like Mac OS X\)',
+		'\(X11; Linux [\d_a-z].*\)', '\(X11; Linux [\d_a-z].*; rv:[\d\.a-z].*\)',
+		'\(X11; [a-z].*; Linux [\d_a-z].*; rv:[\d\.a-z].*\)',
+		'Chrome/[\d\.].*', 'Vivaldi/[\d\.].*', 'Firefox/[\d\.].*', 'rv:[\d\.a-z].*',
+		'AppleWebKit/[\d\.].*', 'Safari/[\d\.].*', 'Gecko/[\d\.].*', 'Quark/[\d\.].*',
+		'Chromium/[\d\.].*', 'Trident/[\d\.].*', 'Edge/[\d\.].*', 'Edg/[\d\.].*',
+		'Opera/[\d\.].*', 'Ceatles/[\d\.].*', 'UCBrowser/[\d\.].*', 'Navigator/[\d\.a-z].*',
+		'Mozilla/[\d\.].*', 'Goanna/[\d\.].*', 'PaleMoon/[\d\.].*', 'Windows NT [\d\.].*',
+		'Intel Mac OS X \d*_\d*_\d*', 'Intel Mac OS X [\d\.].*', 'Presto/[\d\.].*',
+		'MSIE [\d\.].*', 'Version/[\d\.].*', 'Version/[\d\.].*', '.NET CLR [\d\.].*',
 		'SLCC2', 'Media Center PC \d*\.\d*', 'Netscape/\d*\.\d*\.\d*',
-		'CrOS x86_64 [\d\.]*', 'Mobile/[\d\.a-z]*', 'Build/[\d\.a-z]*',
-		'FxiOS/[\d\.a-z]*', 'OPR/[\d\.]*', 'UBrowser/[\d\.]*'];
+		'CrOS x86_64 [\d\.].*', 'Mobile/[\d\.a-z].*', 'Build/[\d\.a-z].*',
+		'FxiOS/[\d\.a-z].*', 'OPR/[\d\.].*', 'baidubrowser/[\d\.].*', 'UBrowser/[\d\.].*',
+		'Android [\d\.].*'];
 
 	do {
 		$oldagent = $agent;
@@ -114,7 +115,8 @@ function blockbots_remove_known_parts($agent)
 	$search = ['KHTML', 'like Gecko', 'WOW64', 'x86_64', 'X11', 'Linux', 'compatible',
 		'Macintosh', 'x64', 'Win64', 'Mobile', 'i686', 'en-US', 'zh-CN', ' de ',
 		' fr ', ' U ', 'Google Favicon', 'Windows', 'googleweblight',' en-us ',
-		'Win 9x 4.90', ' SG ', 'Intel Mac OS X x.y', ' wv ', 'PPC Mac OS X Mach-O', ' pre '];
+		'Win 9x 4.90', ' SG ', 'Intel Mac OS X x.y', ' wv ', 'PPC Mac OS X Mach-O', ' pre ',
+		'(Baidu; P1 5.1)', 'T7/7.5'];
 	do {
 		$oldtext = $agent;
 		$agent = ' ' . trim(str_replace($search, ' ', $agent), ' ();:.,/') . ' ';
