@@ -17,6 +17,7 @@ use Friendica\Core\Hook;
 use Friendica\Core\System;
 use Friendica\Core\Logger;
 use Friendica\Core\Config;
+use Jaybizzle\CrawlerDetect\CrawlerDetect;
 
 function blockbots_install()
 {
@@ -36,6 +37,13 @@ function blockbots_check($a, $b)
 
 	$request = ['agent' => $_SERVER['HTTP_USER_AGENT'], 'uri' => $_SERVER['REQUEST_URI']];
 
+	$CrawlerDetect = new CrawlerDetect;
+
+	if ($CrawlerDetect->isCrawler($_SERVER['HTTP_USER_AGENT'])) {
+			Logger::info('blocking crawler', $request);
+			System::httpExit(403);
+	}
+
 	// List of parts of user agent strings of known bots
 	$agents = ['ArchiveTeam ArchiveBot', 'SEMrushBot', '360Spider', 'Twitterbot', 'ltx71', 'AhrefsBot', 'YoudaoBot',
 		'Baiduspider', 'MSNBot', 'Googlebot', 'Sosospider', 'JikeSpider', 'BLEXBot', 'picmole', 'LexxeBot',
@@ -46,11 +54,12 @@ function blockbots_check($a, $b)
 		'Yasni', 'netEstate NE Crawler', 'Exabot', 'Pixray-Seeker', 'Linguee', 'integromedb', 'SearchmetricsBot',
 		'BDCbot', 'GrapeshotCrawler', 'WeSEE:Search', 'TurnitinBot', 'admantx', 'BUbiNG', 'YisouSpider',
 		'facebookexternalhit', 'ldspider', 'Researchscan', 'CCBot', 'Qwantify/Bleriot', 'PaperLiBot', 'bingbot',
-		'AppEngine-Google', 'Datanyze', 'evc-batch', 'HTTP Banner Detection', 'DuckDuckGo', 'QwantBrowser'];
+		'AppEngine-Google', 'Datanyze', 'evc-batch', 'HTTP Banner Detection', 'DuckDuckGo', 'QwantBrowser',
+		'Hatena-Favicon', 'Dispatch/', 'Scoop.it'];
 
 	foreach ($agents as $agent) {
 		if (stristr($_SERVER['HTTP_USER_AGENT'], $agent)) {
-			Logger::info('blocking user-agent', $request);
+			Logger::info('additional blocking', $request);
 			System::httpExit(403);
 		}
 	}
@@ -64,7 +73,7 @@ function blockbots_check($a, $b)
 	$agents = ['diaspora-connection-tester', 'DiasporaFederation', 'Friendica', '(compatible; zot)',
 		'Micro.blog', 'Mastodon', 'hackney', 'GangGo', 'python/federation', 'GNU social', 'winHttp',
 		'Go-http-client', 'Mr.4x3 Powered', 'Test Certificate Info', 'WordPress.com', 'zgrab',
-		'curl/', 'StatusNet', 'OpenGraphReader/', 'Uptimebot/'];
+		'curl/', 'StatusNet', 'OpenGraphReader/', 'Uptimebot/', 'python-opengraph-jaywink'];
 
 	foreach ($agents as $agent) {
 		if (stristr($_SERVER['HTTP_USER_AGENT'], $agent)) {
